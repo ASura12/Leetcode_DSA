@@ -24,7 +24,7 @@ public:
     }
     
     vector<int> searchRange(vector<int>& nums, int target) {
-        int n = nums.size();
+    
         vector<int> result = {-1, -1};
         int FirstOcc = firstOcc(nums,target,true);
         int LastOcc = firstOcc(nums,target,false);
