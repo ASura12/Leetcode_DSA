@@ -1,34 +1,32 @@
 class Solution {
 public:
     int search(vector<int>& nums, int target) {
-        int st = 0;
-        int end = nums.size()-1;
-        while(st <= end){
-            int mid = st + (end - st)/2;
-            if(nums[mid] == target){
+        int start = 0, end = nums.size() - 1;
+
+        while (start <= end) {
+            int mid = start + (end - start) / 2;
+
+            if (nums[mid] == target)
                 return mid;
-            }
-            //Left Sorted 
-            if(nums[st] <= nums[mid]){
-                //Left Search phase if target lies between start and mid 
-                if(nums[st] <= target && target <= nums[mid]){
-                    end = mid -1;
-                }else{
-                    // Search in right phase
-                    st = mid + 1;
+
+            // Left half is sorted
+            if (nums[start] <= nums[mid]) {
+                if (nums[start] <= target && target < nums[mid]) {
+                    end = mid - 1;
+                } else {
+                    start = mid + 1;
                 }
             }
-            //Right Sorted 
-            else{
-                //Right Search phase if target lies between start and mid 
-                if(nums[mid] <= target && target <= nums[end]){
-                    st = mid + 1;
-                }else{
-                    // Search in left phase
+            // Right half is sorted
+            else {
+                if (nums[mid] < target && target <= nums[end]) {
+                    start = mid + 1;
+                } else {
                     end = mid - 1;
                 }
             }
         }
+
         return -1;
     }
 };
