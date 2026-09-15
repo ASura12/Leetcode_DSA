@@ -1,43 +1,35 @@
 class Solution {
-public:
-    // Helper function to find the index of a value in the postorder array
-    int search(vector<int>& postorder, int left, int right, int val) {
-        for (int i = left; i <= right; i++) {
-            if (postorder[i] == val) {
-                return i;
-            }
-        }
-        return -1; // Fixed the syntax error here
-    }
+private:
+    unordered_map<int, int> postMap;
 
-    TreeNode* helper(vector<int>& preorder, vector<int>& postorder, int &preIdx, int left, int right) {
-        // Base case 1: Out of bounds
-        if (left > right || preIdx >= preorder.size()) return nullptr;
-        
+    TreeNode* helper(vector<int>& preorder, int& preIdx, int postLeft, int postRight) {
+        // Base case: no elements left to process
+        if (postLeft > postRight) return nullptr;
+
         // Create the current root node
-        TreeNode* root = new TreeNode(preorder[preIdx]);
-        preIdx++;
-        
-        // Base case 2: Leaf node reached (no children to process)
-        if (left == right) return root;
+        TreeNode* root = new TreeNode(preorder[preIdx++]);
 
-        // Peak at the next element in preorder, which is the root of the left subtree
-        int nextVal = preorder[preIdx];
-        
-        // Search for this left child in the postorder array
-        int postIdx = search(postorder, left, right, nextVal);
-        
-        // Everything up to postIdx belongs to the left subtree
-        root->left = helper(preorder, postorder, preIdx, left, postIdx);
-        
-        // Everything after postIdx (excluding the current root at 'right') belongs to the right subtree
-        root->right = helper(preorder, postorder, preIdx, postIdx + 1, right - 1);
-        
+        // If this was the last node in this subtree scope, return it
+        if (postLeft == postRight) return root;
+
+        // Find the index of the next preorder element (left child) in postorder array
+        int leftChildPostIdx = postMap[preorder[preIdx]];
+
+        // Recursively build left and right subtrees based on the split index
+        root->left = helper(preorder, preIdx, postLeft, leftChildPostIdx);
+        root->right = helper(preorder, preIdx, leftChildPostIdx + 1, postRight - 1);
+
         return root;
     }
 
+public:
     TreeNode* constructFromPrePost(vector<int>& preorder, vector<int>& postorder) {
+        // Map values to their indices for O(1) lookups
+        for (int i = 0; i < postorder.size(); i++) {
+            postMap[postorder[i]] = i;
+        }
+        
         int preIdx = 0;
-        return helper(preorder, postorder, preIdx, 0, postorder.size() - 1);
+        return helper(preorder, preIdx, 0, postorder.size() - 1);
     }
 };
